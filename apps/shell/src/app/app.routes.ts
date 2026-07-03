@@ -7,8 +7,8 @@ export const appRoutes: Route[] = [
     loadChildren: () => import('product_details/Routes').then(m => m!.remoteRoutes)
     },
     {
-    path: 'produc_list',
-    loadChildren: () => import('produc_list/Routes').then(m => m!.remoteRoutes)
+    path: 'product_list',
+    loadChildren: () => import('product_list/Routes').then(m => m!.remoteRoutes)
     },
     {
       path: '',

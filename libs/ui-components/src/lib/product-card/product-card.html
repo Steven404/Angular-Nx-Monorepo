@@ -1,0 +1,26 @@
+<article class="product-card" [class.product-card--selected]="selected">
+  <div class="product-card__media">
+    <img
+      class="product-card__image"
+      [src]="product.image"
+      [alt]="product.name"
+    />
+    <span class="product-card__category">{{ product.category }}</span>
+  </div>
+
+  <div class="product-card__body">
+    <h3 class="product-card__name">{{ product.name }}</h3>
+    <p class="product-card__description">{{ product.description }}</p>
+  </div>
+
+  <div class="product-card__footer">
+    <span class="product-card__price">${{ product.price.toFixed(2) }}</span>
+    <button
+      type="button"
+      class="product-card__select-btn"
+      (click)="selectProduct.emit(product.id)"
+    >
+      {{ selected ? 'Selected' : 'Select' }}
+    </button>
+  </div>
+</article>

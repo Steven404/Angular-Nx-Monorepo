@@ -10,23 +10,20 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "produc_list/Routes": [
-        "./apps/produc_list/src/app/remote-entry/entry.routes.ts"
+      "product_list/Routes": [
+        "./apps/product_list/src/app/remote-entry/entry.routes.ts"
       ],
       "product_details/Routes": [
         "./apps/product_details/src/app/remote-entry/entry.routes.ts"
-      ]
+      ],
+      "@my-workspace/models": ["./libs/models/src/index.ts"],
+      "@my-workspace/services": ["./libs/services/src/index.ts"],
+      "@my-workspace/ui-components": ["./libs/ui-components/src/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

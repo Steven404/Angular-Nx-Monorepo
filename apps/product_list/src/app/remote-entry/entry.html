@@ -1,0 +1,20 @@
+<section class="product-list">
+  <header class="product-list__header">
+    <h1 class="product-list__title">Products</h1>
+    <p class="product-list__subtitle">Select a product to view its details</p>
+  </header>
+
+  @if (products$ | async; as products) {
+    <div class="product-list__grid">
+      @for (product of products; track product.id) {
+        <lib-product-card
+          [product]="product"
+          [selected]="product.id === selectedId"
+          (selectProduct)="onSelect($event)"
+        />
+      }
+    </div>
+  } @else {
+    <p class="product-list__loading">Loading products…</p>
+  }
+</section>

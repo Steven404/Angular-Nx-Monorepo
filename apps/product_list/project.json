@@ -1,9 +1,9 @@
 {
-  "name": "produc_list",
+  "name": "product_list",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/produc_list/src",
+  "sourceRoot": "apps/product_list/src",
   "tags": [],
   "targets": {
     "build": {
@@ -13,22 +13,22 @@
       ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/produc_list",
-        "index": "apps/produc_list/src/index.html",
-        "main": "apps/produc_list/src/main.ts",
-        "tsConfig": "apps/produc_list/tsconfig.app.json",
+        "outputPath": "dist/apps/product_list",
+        "index": "apps/product_list/src/index.html",
+        "main": "apps/product_list/src/main.ts",
+        "tsConfig": "apps/product_list/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/produc_list/public"
+            "input": "apps/product_list/public"
           }
         ],
         "styles": [
-          "apps/produc_list/src/styles.scss"
+          "apps/product_list/src/styles.scss"
         ],
         "customWebpackConfig": {
-          "path": "apps/produc_list/webpack.config.ts"
+          "path": "apps/product_list/webpack.config.ts"
         }
       },
       "configurations": {
@@ -47,7 +47,7 @@
           ],
           "outputHashing": "all",
           "customWebpackConfig": {
-            "path": "apps/produc_list/webpack.prod.config.ts"
+            "path": "apps/product_list/webpack.prod.config.ts"
           }
         },
         "development": {
@@ -70,10 +70,10 @@
       },
       "configurations": {
         "production": {
-          "buildTarget": "produc_list:build:production"
+          "buildTarget": "product_list:build:production"
         },
         "development": {
-          "buildTarget": "produc_list:build:development"
+          "buildTarget": "product_list:build:development"
         }
       },
       "dependsOn": [
@@ -83,7 +83,7 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "produc_list:build"
+        "buildTarget": "product_list:build"
       }
     },
     "lint": {
@@ -95,7 +95,7 @@
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "coverage/apps/produc_list"
+        "reportsDirectory": "coverage/apps/product_list"
       }
     },
     "serve-static": {
@@ -103,16 +103,16 @@
       "executor": "@nx/web:file-server",
       "defaultConfiguration": "production",
       "options": {
-        "buildTarget": "produc_list:build",
+        "buildTarget": "product_list:build",
         "port": 4201,
         "watch": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "produc_list:build:development"
+          "buildTarget": "product_list:build:development"
         },
         "production": {
-          "buildTarget": "produc_list:build:production"
+          "buildTarget": "product_list:build:production"
         }
       }
     }

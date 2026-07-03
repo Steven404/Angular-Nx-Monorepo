@@ -1,9 +1,9 @@
 import type { ModuleFederationConfig } from '@nx/module-federation';
 
 const config: ModuleFederationConfig = {
-  name: 'produc_list',
+  name: 'product_list',
   exposes: {
-    './Routes': 'apps/produc_list/src/app/remote-entry/entry.routes.ts',
+    './Routes': 'apps/product_list/src/app/remote-entry/entry.routes.ts',
   },
 };
 
