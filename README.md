@@ -1,96 +1,135 @@
-# MyWorkspace
+# Product Dashboard — Angular Micro-Frontend System
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A minimal Product Dashboard built with Angular, Nx, and Webpack Module Federation, demonstrating a Host shell coordinating two independently deployable micro-frontends through shared libraries and event-based communication.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+> Built as a take-home assignment for a Senior Frontend Engineer (Angular) role. Time-boxed to ~4-5 hours
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## Overview
 
-## Run tasks
+The system is a small "Product Dashboard": a **Product List** micro-frontend fetches and displays mock products, a **Product Details** micro-frontend reacts to whichever product was selected, and a **Shell** application hosts both, providing navigation and coordinating communication between them at runtime via Module Federation.
 
-To run tasks with Nx use:
+## Architecture
 
-```sh
-npx nx <target> <project-name>
+```mermaid
+flowchart LR
+  subgraph shell [Shell — Host]
+    Nav[Layout + Navigation]
+  end
+  subgraph list [product_list — Remote]
+    L[ProductList]
+  end
+  subgraph details [product_details — Remote]
+    D[ProductDetails]
+  end
+
+  Models["@my-workspace/models"]
+  Services["@my-workspace/services<br/>ProductDataService + ProductSelectionService"]
+  UI["@my-workspace/ui-components<br/>ProductCardComponent"]
+
+  Nav -. lazy loads at runtime .-> L
+  Nav -. lazy loads at runtime .-> D
+  L -->|"select(id)"| Services
+  Services -->|"selectedProduct$"| D
+  L --> UI
+  Services --> Models
+  UI --> Models
 ```
 
-For example:
+### Project structure
 
-```sh
-npx nx build myproject
+```text
+my-workspace/
+  apps/
+    shell/             # Host: layout, navigation, lazy-loads both remotes
+    product_list/      # Remote A: product list + mock data fetch + selection events
+    product_details/   # Remote B: reacts to selection, shows product details
+  libs/
+    models/            # Product interface — pure types, zero dependencies
+    services/          # ProductDataService (mock API) + ProductSelectionService (event bus)
+    ui-components/     # Reusable presentational components (ProductCardComponent)
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Dependency boundaries
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Nx module boundaries are enforced via `@nx/enforce-module-boundaries` with the following tags:
 
-## Add new projects
+| Tag                | Projects                          | Can depend on                                             |
+| ------------------ | --------------------------------- | --------------------------------------------------------- |
+| `type:host`        | `shell`                           | `type:remote`, `type:data-access`, `type:ui`, `type:util` |
+| `type:remote`      | `product_list`, `product_details` | `type:data-access`, `type:ui`, `type:util`                |
+| `type:data-access` | `services`                        | `type:util`                                               |
+| `type:ui`          | `ui-components`                   | `type:util`                                               |
+| `type:util`        | `models`                          | `type:util`                                               |
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+This is what guarantees `product_list` and `product_details` can never import each other, and that presentational components (`ui-components`) never reach into business logic (`services`).
 
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
+## Tech stack
+
+- Angular ~21 (standalone components, zoneless change detection)
+- Nx 23 (monorepo tooling, code generation, module boundaries)
+- Webpack Module Federation (via `@nx/module-federation` / `@nx/angular` generators)
+- TypeScript
+- RxJS
+
+## Getting started
+
+### Install
+
+```bash
+npm install
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+### Run the full system
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
+The Shell serves as the entry point; Nx automatically serves the two remotes alongside it.
 
-# Generate a library
-npx nx g @nx/react:lib some-lib
+```bash
+npx nx serve shell
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+Then open **[http://localhost:4200](http://localhost:4200)**.
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+| Route              | Shows                  |
+| ------------------ | ---------------------- |
+| `/product_list`    | Product List remote    |
+| `/product_details` | Product Details remote |
 
-## Set up CI!
+### Run a remote independently
 
-### Step 1
+Each remote is independently buildable/servable:
 
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+```bash
+npx nx serve product_list       # http://localhost:4201
+npx nx serve product_details    # http://localhost:4202
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+## How communication works
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+1. `product_list` fetches mock products from `ProductDataService` (`libs/services`) and renders them via the shared `ProductCardComponent` (`libs/ui-components`).
+2. Clicking a product calls `ProductSelectionService.select(id)`.
+3. `product_details` subscribes to `ProductSelectionService.selectedProduct$` (an RxJS stream, resolved via `switchMap`) and renders whatever is currently selected, or an empty state if nothing is.
+4. Because `ProductSelectionService` is `providedIn: 'root'` **and** shared as a Module Federation singleton library (versioning via `package.json` ensures it), both remotes and the shell resolve to the exact same service instance at runtime, despite being three separately built bundles.
 
-### Step 2
+## Architecture decisions
 
-Use the following command to configure a CI workflow for your workspace:
+- **Why Webpack Module Federation via Nx generators**:
+  - Most of the boilerplate code was generated via the setup command (`npx nx g @nx/angular:host apps/shell --remotes=product_list,product_details --standalone --style=scss`), saving time in the setup process
+  - Easy to enforce rules via `@nx/enforce-module-boundaries` and it's tagging system in `eslint.config.mjs`
+- **Why `product_list`/`product_details` use underscores, not hyphens**:
+  - Limitation in the `npx nx g @nx/angular` command (was failing with hyphens)
+- **Standalone components instead of NgModules**:
+  - Besides being the default code generated by angular commands since Angular 17, standalone components offer less boilerplate code, direct import method and easier lazy loading
+  - Every library here is small enough that NgModules would just add boilerplate and complexity without real benefit
+- **Dependency boundaries / tagging scheme** (`type:host` / `type:remote` / `type:data-access` / `type:ui` / `type:util`):
+  - Project tagged `host` can import all the other projects since it's the host
+  - Projects tagged `remote` are micro-frontends, can import everything except other remotes (other micro-frontneds) and the `host`
+  - Project tagged `data-access` is the "services" project and has access only to the project tagged `util` (it needs it for typing the data)
+  - Project tagged `util` is the data typing project (Schema basically)
 
-```sh
-npx nx g ci-workflow
-```
+## What I'd improve with more time
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [ ] Add loading/error states beyond the simple `@if`/`@else` in Product List
+- [ ] Add unit tests for `ProductSelectionService` and the container components
+- [ ] Add unit tests for `ProductCardComponent`
+- [ ] Add e2e tests via cypress in the host applicaton for simple selection and display flows
+- [ ] Expand `ui-components` beyond a single `ProductCardComponent` with generic components like `LoadingSpinner`, `ErrorMessage` etc
