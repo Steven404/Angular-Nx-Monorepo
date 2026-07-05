@@ -4,13 +4,11 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/shell/src",
-  "tags": [],
+  "tags": ["type:host"],
   "targets": {
     "build": {
       "executor": "@nx/angular:webpack-browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/shell",
@@ -24,9 +22,7 @@
             "input": "apps/shell/public"
           }
         ],
-        "styles": [
-          "apps/shell/src/styles.scss"
-        ],
+        "styles": ["apps/shell/src/styles.scss"],
         "customWebpackConfig": {
           "path": "apps/shell/webpack.config.ts"
         }
@@ -88,9 +84,7 @@
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "outputs": [
-        "{options.reportsDirectory}"
-      ],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "reportsDirectory": "coverage/apps/shell"
       }

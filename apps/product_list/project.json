@@ -4,13 +4,11 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/product_list/src",
-  "tags": [],
+  "tags": ["type:remote"],
   "targets": {
     "build": {
       "executor": "@nx/angular:webpack-browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/product_list",
@@ -24,9 +22,7 @@
             "input": "apps/product_list/public"
           }
         ],
-        "styles": [
-          "apps/product_list/src/styles.scss"
-        ],
+        "styles": ["apps/product_list/src/styles.scss"],
         "customWebpackConfig": {
           "path": "apps/product_list/webpack.config.ts"
         }
@@ -76,9 +72,7 @@
           "buildTarget": "product_list:build:development"
         }
       },
-      "dependsOn": [
-        "shell:serve"
-      ]
+      "dependsOn": ["shell:serve"]
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -91,9 +85,7 @@
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "outputs": [
-        "{options.reportsDirectory}"
-      ],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "reportsDirectory": "coverage/apps/product_list"
       }
