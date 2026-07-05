@@ -6,7 +6,7 @@ import {
   ProductSelectionService,
 } from '@my-workspace/services';
 import { Product } from '@my-workspace/models';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Component({
   imports: [AsyncPipe, ProductCardComponent, CommonModule],
@@ -21,10 +21,12 @@ export class RemoteEntry {
 
   readonly products$: Observable<Product[]> =
     this.productDataService.getProducts();
-  selectedId: string | null = null;
+  readonly selectedId$: Observable<string | null> =
+    this.productSelectionService.selectedProduct$.pipe(
+      map((product) => product?.id ?? null),
+    );
 
   onSelect(id: string): void {
-    this.selectedId = id;
     this.productSelectionService.select(id);
   }
 }

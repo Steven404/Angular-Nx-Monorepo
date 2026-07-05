@@ -1,0 +1,41 @@
+<section class="product-details">
+  @if (selectedProduct$ | async; as product) {
+  <article class="product-details__card">
+    <div class="product-details__media">
+      <img
+        class="product-details__image"
+        [src]="product.image"
+        [alt]="product.name"
+      />
+      <span class="product-details__category">{{ product.category }}</span>
+    </div>
+
+    <div class="product-details__body">
+      <h1 class="product-details__name">{{ product.name }}</h1>
+      <p class="product-details__price">${{ product.price.toFixed(2) }}</p>
+      <p class="product-details__description">{{ product.description }}</p>
+    </div>
+  </article>
+  } @else {
+  <div class="product-details__empty">
+    <svg
+      class="product-details__empty-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M21 8L12 3L3 8M21 8L12 13M21 8V16L12 21M3 8L12 13M3 8V16L12 21M12 13V21"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    <h2 class="product-details__empty-title">No product selected</h2>
+    <p class="product-details__empty-text">
+      Choose a product from the list to see its details here.
+    </p>
+  </div>
+  }
+</section>

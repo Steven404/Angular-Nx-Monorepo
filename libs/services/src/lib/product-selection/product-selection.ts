@@ -5,14 +5,13 @@ import { Product } from '@my-workspace/models';
 import { ProductDataService } from '../product-data/product-data';
 
 @Injectable({ providedIn: 'root' })
-
 export class ProductSelectionService {
   private readonly dataService = inject(ProductDataService);
   private readonly selectedId$ = new BehaviorSubject<string | null>(null);
 
   readonly selectedProduct$: Observable<Product | undefined> =
     this.selectedId$.pipe(
-      switchMap((id) => (id ? this.dataService.getById(id) : of(undefined)))
+      switchMap((id) => (id ? this.dataService.getById(id) : of(undefined))),
     );
 
   select(id: string): void {

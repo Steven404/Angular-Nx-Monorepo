@@ -1,9 +1,20 @@
-import { Component } from '@angular/core';
-import { NxWelcome } from './nx-welcome';
+import { Component, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Product } from '@my-workspace/models';
+import { ProductSelectionService } from '@my-workspace/services';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  imports: [NxWelcome],
-  selector: 'app-product_details-entry',
-  template: `<app-nx-welcome></app-nx-welcome>`
+  imports: [CommonModule],
+  selector: 'app-product-details-entry',
+  templateUrl: './entry.html',
+  styleUrl: './entry.scss',
 })
-export class RemoteEntry {}
+export class RemoteEntry {
+  private readonly productSelectionService = inject(ProductSelectionService);
+  selectedProduct$: Observable<Product | undefined>;
+
+  constructor() {
+    this.selectedProduct$ = this.productSelectionService.selectedProduct$;
+  }
+}
